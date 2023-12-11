@@ -21,7 +21,7 @@
             <div class="card-header">
                 <div class="row">
                     <div class="col-md-12 title-text">
-                        <h1 style="text-align: center">Danh Sach</h1>
+                        <h1 style="text-align: center">Danh Sach Hoc Vien</h1>
                         <a href="?action=create" class="btn btn-success">Add new</a>
                         <form method="get" class = "search-bar">
                             <input type="text" id="searchName" name="searchName">

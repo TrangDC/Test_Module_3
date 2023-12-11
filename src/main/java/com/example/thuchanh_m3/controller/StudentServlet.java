@@ -18,6 +18,7 @@ import java.util.List;
 @WebServlet(name="StudentServlet", urlPatterns = "/students")
 public class StudentServlet extends HttpServlet {
     private StudentDAO studentDAO;
+
     @Override
     public void init() throws ServletException {
         this.studentDAO = new StudentDAO();
@@ -33,32 +34,16 @@ public class StudentServlet extends HttpServlet {
             case "create":
                 showFormAdd(req, resp);
             case "update":
-                showFormEdit(req,resp);
+                showFormEdit(req, resp);
                 break;
             case "delete":
-                deleteStudent(req,resp);
+                deleteStudent(req, resp);
                 break;
             default:
-                showListStudent(req,resp);
+                showListStudent(req, resp);
                 break;
         }
     }
-
-    private void searchStudent(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-            // Lấy dữ liệu từ form tìm kiếm
-            String searchName = req.getParameter("searchName");
-
-            // Gọi phương thức tìm kiếm từ Service hoặc DAO
-            // Ví dụ:
-            List<Student> students = studentDAO.getStudentbySearch(searchName);
-
-            // Đưa dữ liệu kết quả lên request để hiển thị trên trang JSP
-            req.setAttribute("students", students);
-
-            // Chuyển hướng đến trang hiển thị kết quả tìm kiếm
-            RequestDispatcher dispatcher = req.getRequestDispatcher("/student/liststudent.jsp");
-            dispatcher.forward(req, resp);
-        }
 
     private void showFormEdit(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         int id = Integer.parseInt(req.getParameter("id"));
@@ -67,14 +52,14 @@ public class StudentServlet extends HttpServlet {
         req.setAttribute("student", student);
         req.setAttribute("classrooms", classrooms);
         RequestDispatcher view = req.getRequestDispatcher("/student/update.jsp");
-        view.forward(req,resp);
+        view.forward(req, resp);
     }
 
     private void showFormAdd(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
         List<Classroom> classrooms = this.studentDAO.getAllClassrooms();
         req.setAttribute("classrooms", classrooms);
         RequestDispatcher view = req.getRequestDispatcher("/student/add.jsp");
-        view.forward(req,resp);
+        view.forward(req, resp);
     }
 
     private void deleteStudent(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -95,10 +80,10 @@ public class StudentServlet extends HttpServlet {
             RequestDispatcher dispatcher = req.getRequestDispatcher("/student/liststudent.jsp");
             dispatcher.forward(req, resp);
         }
-            students = this.studentDAO.getAllStudent();
-            req.setAttribute("students", students);
-            RequestDispatcher dispatcher = req.getRequestDispatcher("/student/liststudent.jsp");
-            dispatcher.forward(req, resp);
+        students = this.studentDAO.getAllStudent();
+        req.setAttribute("students", students);
+        RequestDispatcher dispatcher = req.getRequestDispatcher("/student/liststudent.jsp");
+        dispatcher.forward(req, resp);
     }
 
     @Override
@@ -109,17 +94,25 @@ public class StudentServlet extends HttpServlet {
         }
         switch (action) {
             case "create":
-                insertStudent(req, resp);
+                try {
+                    insertStudent(req, resp);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
                 break;
             case "update":
-                updateStudent(req, resp);
+                try {
+                    updateStudent(req, resp);
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                }
                 break;
             default:
                 break;
         }
     }
 
-    private void updateStudent(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    private void updateStudent(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException, SQLException {
         int id = Integer.parseInt(req.getParameter("id"));
         String name = req.getParameter("name");
         String dateofbirth = req.getParameter("dob");
@@ -138,7 +131,7 @@ public class StudentServlet extends HttpServlet {
     }
 
 
-    private void insertStudent(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    private void insertStudent(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException, SQLException {
 
         String name = req.getParameter("name");
         String dateofbirth = req.getParameter("dob");

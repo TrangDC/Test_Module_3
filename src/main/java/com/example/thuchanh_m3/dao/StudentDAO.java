@@ -117,14 +117,14 @@ public class StudentDAO implements IStudentDAO {
         try (Connection connection = getConnect();
              PreparedStatement statement = connection.prepareStatement("UPDATE student\n" +
                      "SET\n" +
-                     "    name = ?,    -- Update with the new name\n" +
-                     "    email = ?,   -- Update with the new email\n" +
-                     "    dateofbirth = ?,   -- Update with the new date of birth\n" +
-                     "    phone = ?,   -- Update with the new phone number\n" +
-                     "    address = ?, -- Update with the new address\n" +
-                     "    class_id = (SELECT id FROM classroom WHERE name = ?) -- Update with the selected class name\n" +
+                     "    name = ?,\n" +
+                     "    email = ?,\n" +
+                     "    dateofbirth = ?,\n" +
+                     "    phone = ?,\n" +
+                     "    address = ?,\n" +
+                     "    class_id = (SELECT id FROM classroom WHERE name = ?)\n" +
                      "WHERE\n" +
-                     "    id = ?; -- Specify the student ID for the student you want to update")) {
+                     "    id = ?;")) {
             statement.setString(1, student.getName());
             statement.setString(2, student.getEmail());
             statement.setString(3, student.getDateofbirth());
@@ -190,4 +190,18 @@ public class StudentDAO implements IStudentDAO {
             throw new RuntimeException(e);
         }
     }
+
+    public boolean checkInfor(String email, int phone) throws SQLException {
+
+        try (Connection connection = getConnect();
+             PreparedStatement statement = connection.prepareStatement("SELECT * FROM student WHERE email = '" + email + "' OR phone ='" + phone + "'");) {
+            ResultSet rs = statement.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return true;
+    }
+
+
 }
