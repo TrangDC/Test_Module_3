@@ -15,7 +15,6 @@
 </head>
 <body>
 
-
 <div class="container">
     <div class="col-12 col-md-12">
         <div class="card">
@@ -24,8 +23,10 @@
                     <div class="col-md-12 title-text">
                         <h1 style="text-align: center">Danh Sach</h1>
                         <a href="?action=create" class="btn btn-success">Add new</a>
-<%--                        <a href="/admin.jsp" class="btn btn-success">Quay Lai</a>--%>
-
+                        <form method="get" class = "search-bar">
+                            <input type="text" id="searchName" name="searchName">
+                            <input type="submit" value="Tìm kiếm">
+                        </form>
                     </div>
                 </div>
 

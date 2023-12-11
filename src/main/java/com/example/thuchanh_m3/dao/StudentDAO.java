@@ -54,7 +54,7 @@ public class StudentDAO implements IStudentDAO {
                      "         JOIN classroom ON student.class_id = classroom.id\n" +
                      "WHERE student.id = ?");
         ) {
-            statement.setInt(1,id);
+            statement.setInt(1, id);
             System.out.println(statement);
             ResultSet rs = statement.executeQuery();
             while (rs.next()) {
@@ -64,7 +64,7 @@ public class StudentDAO implements IStudentDAO {
                 String address = rs.getString("address");
                 int phone = rs.getInt("phone");
                 String classroom = rs.getString("classroom.name");
-                student = new Student(name, dateofbirth, email, address, phone, classroom);
+                student = new Student(id, name, dateofbirth, email, address, phone, classroom);
             }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -102,8 +102,8 @@ public class StudentDAO implements IStudentDAO {
         boolean rowDeleted;
         try (Connection connection = getConnect();
              PreparedStatement statement = connection.prepareStatement("DELETE FROM student WHERE id = ?");
-        ){
-            statement.setInt(1,id);
+        ) {
+            statement.setInt(1, id);
             rowDeleted = statement.executeUpdate() > 0;
         } catch (SQLException e) {
             throw new RuntimeException(e);
@@ -113,29 +113,31 @@ public class StudentDAO implements IStudentDAO {
 
     @Override
     public boolean updateStudent(Student student) {
-//        try (Connection connection = getConnect();
-//             PreparedStatement statement = connection.prepareStatement("UPDATE student\n" +
-//                     "SET\n" +
-//                     "    name = ?,    -- Update with the new name\n" +
-//                     "    email = ?,   -- Update with the new email\n" +
-//                     "    dateofbirth = ?,   -- Update with the new date of birth\n" +
-//                     "    phone = ?,   -- Update with the new phone number\n" +
-//                     "    address = ?, -- Update with the new address\n" +
-//                     "    class_id = (SELECT id FROM classroom WHERE name = ?) -- Update with the selected class name\n" +
-//                     "WHERE\n" +
-//                     "    id = ?; -- Specify the student ID for the student you want to update")) {
-////            statement.setString(1, student.getName());
-////            statement.setString(2, student.getEmail());
-////            statement.setString(3, student.getDateofbirth());
-////            statement.setInt(4, student.getPhone());
-////            statement.setString(5, student.getAddress());
-////            statement.setString(6, student.getClassroom());
-////
-////
-////        } catch (SQLException e) {
-////            throw new RuntimeException(e);
-////        }
-        return false;
+        boolean rowUpdated;
+        try (Connection connection = getConnect();
+             PreparedStatement statement = connection.prepareStatement("UPDATE student\n" +
+                     "SET\n" +
+                     "    name = ?,    -- Update with the new name\n" +
+                     "    email = ?,   -- Update with the new email\n" +
+                     "    dateofbirth = ?,   -- Update with the new date of birth\n" +
+                     "    phone = ?,   -- Update with the new phone number\n" +
+                     "    address = ?, -- Update with the new address\n" +
+                     "    class_id = (SELECT id FROM classroom WHERE name = ?) -- Update with the selected class name\n" +
+                     "WHERE\n" +
+                     "    id = ?; -- Specify the student ID for the student you want to update")) {
+            statement.setString(1, student.getName());
+            statement.setString(2, student.getEmail());
+            statement.setString(3, student.getDateofbirth());
+            statement.setInt(4, student.getPhone());
+            statement.setString(5, student.getAddress());
+            statement.setString(6, student.getClassroom());
+            statement.setInt(7, student.getId());
+            System.out.println(statement);
+            rowUpdated = statement.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return rowUpdated;
     }
 
     public List<Classroom> getAllClassrooms() {
@@ -154,7 +156,38 @@ public class StudentDAO implements IStudentDAO {
             e.printStackTrace();
             // Handle SQL exception as needed
         }
-
         return classrooms;
+    }
+
+    public List<Student> getStudentbySearch(String searchName) {
+        List<Student> students = new ArrayList<>();
+        String sql = "SELECT student.id, student.name, student.Email, student.DateOfBirth, student.phone, student.address, classroom.name\n" +
+                "FROM student\n" +
+                "         JOIN classroom ON student.class_id = classroom.id\n" +
+                "WHERE student.name LIKE ?;";
+        try (Connection connection = getConnect();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, "%" + searchName + "%");
+
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                while (rs.next()) {
+                    int id = rs.getInt("id");
+                    String name = rs.getString("name");
+                    String dateofbirth = rs.getString("dateofbirth");
+                    String email = rs.getString("email");
+                    String address = rs.getString("address");
+                    int phone = rs.getInt("phone");
+                    String classroom = rs.getString("classroom.name");
+
+                    students.add(new Student(id, name, dateofbirth, email, address, phone, classroom));
+                    System.out.println(preparedStatement);
+                }
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+            return students;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

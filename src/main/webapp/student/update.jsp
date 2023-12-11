@@ -24,36 +24,38 @@
                 <c:out value="${message}"></c:out>
             </div>
             <div class="card-body">
-                <form action="${pageContext.request.contextPath}/admin/listuserdata?action=update&id=<c:out value="${user.getId()}"/>" method="post">
+                <form action="${pageContext.request.contextPath}/students?action=update&id=<c:out value="${student.getId()}"/>" method="post">
                     <div class="mb-3">
-                        <label for="exampleInputEmail1" class="form-label">Name</label>
-                        <input type="text" name="name" value="<c:out value="${user.getName()}"/>" class="form-control" id="" aria-describedby="emailHelp">
+                        <label for="name" class="form-label">Name</label>
+                        <input type="text" name="name" value="<c:out value="${student.getName()}"/>" class="form-control" id="name" >
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" name="email" value="<c:out value="${student.getEmail()}"/>" class="form-control" id="email" >
                     </div>
                     <div class="mb-3">
-                        <label for="exampleInputEmail1" class="form-label">Email</label>
-                        <input type="email" name="email" class="form-control" value="<c:out value="${user.getEmail()}"/>" id="exampleInputEmail1" aria-describedby="emailHelp">
+                        <label for="address" class="form-label">Address</label>
+                        <input type="text" name="address"  value="<c:out value="${student.getAddress()}"/>" class="form-control" id="address" >
                     </div>
                     <div class="mb-3">
-                        <label for="" class="form-label">Address</label>
-                        <input type="text" name="address" value="<c:out value="${user.getAddress()}"/>" class="form-control" id="address">
+                        <label for="dob" class="form-label">Date of Birth:</label>
+                        <input type="date" name="dob" value="<c:out value="${student.getDateofbirth()}"/>" class="form-control" id="dob" >
                     </div>
                     <div class="mb-3">
-                        <label for="" class="form-label">UserName</label>
-                        <input type="text" name="username" value="<c:out value="${user.getUserName()}"/>" class="form-control" id="username">
+                        <label for="phone" class="form-label">Phone</label>
+                        <input type="number" name="phone" value="<c:out value="${student.getPhone()}"/>" class="form-control" id="phone" >
                     </div>
-                    <div class="mb-3">
-                        <label for="" class="form-label">Password</label>
-                        <input type="text" name="password" value="<c:out value="${user.getPassword()}"/>" class="form-control" id="password">
-                    </div>
-                    <div class="mb-3">
-                        <label for="" class="form-label">Role</label>
-                        <select name="role" id="role">
-                            <option <c:if test="${user.getRole() == 'admin'}"> selected </c:if> value="admin">Admin</option>
-                            <option <c:if test="${user.getRole() == 'user'}"> selected </c:if>  value="user">User</option>
-                        </select>
+                    <div>
+                        <label for="class">Class:</label>
+                        <select id="class" name="class" required>
+                            <c:forEach var="classroom" items="${classrooms}">
+                                <option value="${classroom.getName()}">${classroom.getName()}</option>
+                            </c:forEach>
+                        </select><br>
                     </div>
                     <button type="submit" class="btn btn-primary">Submit</button>
-                    <a href="/admin/listuserdata" class="btn btn-info">Cancel</a>
+                    <a href="/students" class="btn btn-info">Cancel</a>
                 </form>
             </div>
         </div>

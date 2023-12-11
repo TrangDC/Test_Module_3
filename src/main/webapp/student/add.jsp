@@ -26,10 +26,6 @@
             </div>
             <div class="card-body">
                 <form method="post">
-                    <%--                    <div class="mb-3">--%>
-                    <%--                        <label for="exampleInputEmail1" class="form-label">Id</label>--%>
-                    <%--                        <input type="text" name="id" class="form-control" id="id" aria-describedby="name">--%>
-                    <%--                    </div>--%>
                     <div class="mb-3">
                         <label for="name" class="form-label">Name</label>
                         <input type="text" name="name" class="form-control" id="name" >

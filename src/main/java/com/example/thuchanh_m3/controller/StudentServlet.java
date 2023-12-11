@@ -44,7 +44,28 @@ public class StudentServlet extends HttpServlet {
         }
     }
 
+    private void searchStudent(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+            // Lấy dữ liệu từ form tìm kiếm
+            String searchName = req.getParameter("searchName");
+
+            // Gọi phương thức tìm kiếm từ Service hoặc DAO
+            // Ví dụ:
+            List<Student> students = studentDAO.getStudentbySearch(searchName);
+
+            // Đưa dữ liệu kết quả lên request để hiển thị trên trang JSP
+            req.setAttribute("students", students);
+
+            // Chuyển hướng đến trang hiển thị kết quả tìm kiếm
+            RequestDispatcher dispatcher = req.getRequestDispatcher("/student/liststudent.jsp");
+            dispatcher.forward(req, resp);
+        }
+
     private void showFormEdit(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        int id = Integer.parseInt(req.getParameter("id"));
+        List<Classroom> classrooms = this.studentDAO.getAllClassrooms();
+        Student student = this.studentDAO.selectStudent(id);
+        req.setAttribute("student", student);
+        req.setAttribute("classrooms", classrooms);
         RequestDispatcher view = req.getRequestDispatcher("/student/update.jsp");
         view.forward(req,resp);
     }
@@ -66,11 +87,18 @@ public class StudentServlet extends HttpServlet {
     }
 
     private void showListStudent(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String searchName = req.getParameter("searchName");
         List<Student> students = new ArrayList<Student>();
-        students = this.studentDAO.getAllStudent();
-        req.setAttribute("students", students);
-        RequestDispatcher dispatcher = req.getRequestDispatcher("/student/liststudent.jsp");
-        dispatcher.forward(req, resp);
+        if (searchName != null) {
+            students = studentDAO.getStudentbySearch(searchName);
+            req.setAttribute("students", students);
+            RequestDispatcher dispatcher = req.getRequestDispatcher("/student/liststudent.jsp");
+            dispatcher.forward(req, resp);
+        }
+            students = this.studentDAO.getAllStudent();
+            req.setAttribute("students", students);
+            RequestDispatcher dispatcher = req.getRequestDispatcher("/student/liststudent.jsp");
+            dispatcher.forward(req, resp);
     }
 
     @Override
@@ -84,18 +112,34 @@ public class StudentServlet extends HttpServlet {
                 insertStudent(req, resp);
                 break;
             case "update":
-//                try {
-//                    updateStudent(req, resp);
-//                } catch (SQLException e) {
-//                    e.printStackTrace();
-//                }
+                updateStudent(req, resp);
                 break;
             default:
                 break;
         }
     }
 
+    private void updateStudent(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        int id = Integer.parseInt(req.getParameter("id"));
+        String name = req.getParameter("name");
+        String dateofbirth = req.getParameter("dob");
+        String email = req.getParameter("email");
+        String address = req.getParameter("address");
+        int phone = Integer.parseInt(req.getParameter("phone"));
+        String classroom = req.getParameter("class");
+
+        Student student = new Student(id, name, dateofbirth, email, address, phone, classroom);
+        this.studentDAO.updateStudent(student);
+        List<Student> students = new ArrayList<Student>();
+        students = this.studentDAO.getAllStudent();
+        req.setAttribute("students", students);
+        RequestDispatcher dispatcher = req.getRequestDispatcher("/student/liststudent.jsp");
+        dispatcher.forward(req, resp);
+    }
+
+
     private void insertStudent(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+
         String name = req.getParameter("name");
         String dateofbirth = req.getParameter("dob");
         String email = req.getParameter("email");
@@ -105,9 +149,11 @@ public class StudentServlet extends HttpServlet {
 
         Student newStudent = new Student(name, dateofbirth, email, address, phone, classroom);
         this.studentDAO.addStudent(newStudent);
-        req.setAttribute("message","Da them thanh cong !");
-        RequestDispatcher view = req.getRequestDispatcher("/student/add.jsp");
-        view.forward(req,resp);
+        List<Student> students = new ArrayList<Student>();
+        students = this.studentDAO.getAllStudent();
+        req.setAttribute("students", students);
+        RequestDispatcher dispatcher = req.getRequestDispatcher("/student/liststudent.jsp");
+        dispatcher.forward(req, resp);
 
     }
 }
